@@ -20,7 +20,6 @@ class LaravelSecretsServiceProvider extends ServiceProvider
 
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
-
             // Publishing the configuration file.
             $this->publishes([
                 __DIR__.'/../config/laravelsecrets.php' => config_path('laravelsecrets.php'),
