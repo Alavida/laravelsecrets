@@ -1,0 +1,41 @@
+{
+    "name": "alavida/laravelsecrets",
+    "description": ":description",
+    "license": "license",
+    "authors": [
+        {
+            "name": "author name",
+            "email": "author email",
+            "homepage": "author homepage"
+        }
+    ],
+    "homepage": "https://github.com/alavida/laravelsecrets",
+    "keywords": ["Laravel", "LaravelSecrets"],
+    "require": {
+        "illuminate/support": "~5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~6.0",
+        "orchestra/testbench": "~3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Alavida\\LaravelSecrets\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Alavida\\LaravelSecrets\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Alavida\\LaravelSecrets\\LaravelSecretsServiceProvider"
+            ],
+            "aliases": {
+                "LaravelSecrets": "Alavida\\LaravelSecrets\\Facades\\LaravelSecrets"
+            }
+        }
+    }
+}
