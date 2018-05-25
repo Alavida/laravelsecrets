@@ -2,6 +2,10 @@
 
 namespace Alavida\LaravelSecrets;
 
+use Alavida\LaravelSecrets\Console\Commands\UpdateSecrets;
+use Aws\Laravel\AwsFacade;
+use Aws\Laravel\AwsServiceProvider;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\ServiceProvider;
 
 class LaravelSecretsServiceProvider extends ServiceProvider
@@ -25,6 +29,20 @@ class LaravelSecretsServiceProvider extends ServiceProvider
                 __DIR__.'/../config/laravelsecrets.php' => config_path('laravelsecrets.php'),
             ], 'laravelsecrets.config');
 
+            // Register command
+            $this->commands([
+                UpdateSecrets::class
+            ]);
+
+            // Schedule command to run everyFiveMinutes
+            $this->app->booted(function () {
+                $schedule = $this->app->make(Schedule::class);
+                $schedule->command('secrets:update')->everyFiveMinutes();
+            });
+
+            // Re-write .env from cache pulled from AWS Secrets Manager
+            $this->overwriteEnvFile();
+
             // Publishing the views.
             /*$this->publishes([
                 __DIR__.'/../resources/views' => base_path('resources/views/vendor/alavida'),
@@ -42,6 +60,7 @@ class LaravelSecretsServiceProvider extends ServiceProvider
 
             // Registering package commands.
             // $this->commands([]);
+
         }
     }
 
@@ -53,6 +72,11 @@ class LaravelSecretsServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/laravelsecrets.php', 'laravelsecrets');
+
+        // Register Server Provider of Subpackage: "aws/aws-sdk-php-laravel": "~3.0"
+        $this->app->register(AwsServiceProvider::class);
+
+        $this->app->alias('AWS', AwsFacade::class);
 
         // Register the service the package provides.
         $this->app->singleton('laravelsecrets', function ($app) {
@@ -68,5 +92,13 @@ class LaravelSecretsServiceProvider extends ServiceProvider
     public function provides()
     {
         return ['laravelsecrets'];
+    }
+
+    private function overwriteEnvFile(): void
+    {
+        $env_variables = cache('secrets');
+        if (isset($env_variables)) {
+            file_put_contents(base_path('.env'), $env_variables);
+        }
     }
 }

@@ -2,8 +2,8 @@
 
 return [
 
-    'filterPrefix' => '',
+    'filterPrefix' => 'prod',
 
-    'filterTag' => ''
+    'filterTag' => 'canada'
 
 ];
